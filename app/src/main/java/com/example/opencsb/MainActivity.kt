@@ -1,5 +1,6 @@
 package com.example.opencsb
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentSender
 import android.net.Uri
@@ -116,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         login_csb(personnummer, pwd)
     }
 
+    @SuppressLint("SetTextI18n")
     fun login_csb(personnummer : String, pwd : String) {
 
         // TextView for errors
@@ -141,7 +143,8 @@ class MainActivity : AppCompatActivity() {
                     val id = "1720" + (0..9999999999999999).random().toString()
                     val unixTime = System.currentTimeMillis().toString()
 
-                    val completeUrl = "https://www.chalmersstudentbostader.se/widgets/?callback=jQuery" + id + "_" + unixTime + "&widgets%5B%5D=aptuslogin%40APTUSPORT"
+                    val completeUrl = "https://www.chalmersstudentbostader.se/widgets/?callback=jQuery" +
+                                              id + "_" + unixTime + "&widgets%5B%5D=aptuslogin%40APTUSPORT"
 /*                  // Doesn't seem to work, not exactly a json that gets returned
                     val jquery = JsonObjectRequest(Request.Method.GET, completeUrl, null,
                     Response.Listener<JSONObject> { response2 ->
@@ -155,13 +158,38 @@ class MainActivity : AppCompatActivity() {
 */
                     val jquery = StringRequest(Request.Method.GET, completeUrl,
                         Response.Listener<String> { response2 ->
-                             val json = (response2.dropWhile { c -> c != '(' }
+                            val json = (response2.dropWhile { c -> c != '(' }
                                 .drop(1)
                                 .takeWhile { c -> c != ')' })
-                             val i = json.indexOf("aptusUrl") + 11
-                             val aptusUrl = json.drop(i).takeWhile { c -> c != '"' }
+                            val i = json.indexOf("aptusUrl") + 11
+                            val aptusUrl = json.drop(i).takeWhile { c -> c != '"' }
 
-                             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(aptusUrl)))
+                            // Manually unlock
+                            // startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(aptusUrl)))
+
+                            // Automatically unlock a specific door
+
+                            val openAptus = StringRequest(Request.Method.GET, aptusUrl,
+                                Response.Listener { response3 ->
+                                    //Should check if I get OK
+
+                                    val doorID = "116234"
+                                    val aptUrl =
+                                        "https://apt-www.chalmersstudentbostader.se/AptusPortal/Lock/UnlockEntryDoor/$doorID"
+                                    val openDoorRequest = StringRequest(Request.Method.GET, aptUrl,
+                                        Response.Listener { response4 ->
+                                            // Maybe should check the response
+                                            textView.text = response4.dropWhile { c -> c != ':' }.
+                                                                      drop(2).
+                                                                      takeWhile { c -> c != '"' }
+                                        },
+                                        Response.ErrorListener { textView.text = "Opening Door didn't work" })
+                                    queue.add(openDoorRequest)
+                                },
+                                Response.ErrorListener { textView.text = "Opening Aptus didn't work" }
+                            )
+                            queue.add(openAptus)
+
                         },
                         Response.ErrorListener { textView.text = "JQuery didn't work!"
                         }
