@@ -36,7 +36,7 @@
             android:id="@+id/button_login" style="@android:style/Widget.Material.Button.Colored"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintTop_toBottomOf="@+id/input_pwd"
-            android:textSize="18sp" app:layout_constraintBottom_toTopOf="@+id/input_store" android:onClick="new_login"/>
+            android:textSize="18sp" app:layout_constraintBottom_toTopOf="@+id/input_store" android:onClick="newLogin"/>
     <TextView
             android:text="Login to Chalmers Studentbostäder"
             android:layout_width="264dp"
@@ -66,4 +66,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_login" app:layout_constraintHorizontal_bias="0.5"
             android:checked="true" app:layout_constraintBottom_toTopOf="@+id/output_result"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:clickable="true" app:srcCompat="@android:drawable/ic_menu_preferences"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="16dp"
+            android:id="@+id/floatingActionButton" android:visibility="visible" android:backgroundTintMode="screen"
+            android:tint="#000000" android:onClick="openSettings"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,9 @@ package com.example.opencsb
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentSender
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -19,12 +22,10 @@ import com.android.volley.toolbox.Volley
 import java.net.CookieHandler
 import java.net.CookieManager
 
-import com.google.android.gms.tasks.Task
-import androidx.annotation.NonNull
 import com.google.android.gms.auth.api.credentials.*
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,7 +52,9 @@ class MainActivity : AppCompatActivity() {
                 // Sign the user in with information from the Credential.
                 val pwd = credential.password
                 if (pwd != null) {
-                    login_csb(credential.id, pwd)
+                    findViewById<EditText>(R.id.input_personnummer).setText(credential.id)
+                    findViewById<EditText>(R.id.input_pwd).setText("RandomStringForObscurity")
+                    loginCsb(credential.id, pwd)
                 }
             }
         }
@@ -67,20 +70,19 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
-
-
     }
 
 
 
 
-    fun new_login(view: View) {
-        val personnummer = findViewById<EditText>(R.id.input_personnummer).text.toString()
+    fun newLogin(view: View) {
+        // personal identity number (Swedish: personnummer)
+        val personalNum = findViewById<EditText>(R.id.input_personnummer).text.toString()
         val pwd = findViewById<EditText>(R.id.input_pwd).text.toString()
         val store = findViewById<CheckBox>(R.id.input_store).isChecked
 
         if (store) {
-            val credential = Credential.Builder(personnummer)
+            val credential = Credential.Builder(personalNum)
                 .setPassword(pwd)  // Important: only store passwords in this field.
                 // Android autofill uses this value to complete
                 // sign-in forms, so repurposing this field will
@@ -114,12 +116,12 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        login_csb(personnummer, pwd)
+        loginCsb(personalNum, pwd)
     }
 
     @SuppressLint("SetTextI18n")
-    fun login_csb(personnummer : String, pwd : String) {
-
+    fun loginCsb(personnummer : String, pwd : String) {
+        val automatic = false
         // TextView for errors
         val textView = findViewById<TextView>(R.id.output_result)
         // textView.movementMethod = ScrollingMovementMethod()
@@ -140,6 +142,7 @@ class MainActivity : AppCompatActivity() {
             Response.Listener<String> { response ->
                 // See if login succeeded and we got redirected to "Min bostad"
                 if(response.contains("<title>\n" + "Chalmers")) {
+                    // id and unixtime are generated to mimic CSB's behavior, don't know if it is actually needed
                     val id = "1720" + (0..9999999999999999).random().toString()
                     val unixTime = System.currentTimeMillis().toString()
 
@@ -164,32 +167,40 @@ class MainActivity : AppCompatActivity() {
                             val i = json.indexOf("aptusUrl") + 11
                             val aptusUrl = json.drop(i).takeWhile { c -> c != '"' }
 
-                            // Manually unlock
-                            // startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(aptusUrl)))
+                            // Automatic or manual unlock?
+                            if (automatic == true) {
+                                // Open Aptus for cookies
+                                val openAptus = StringRequest(Request.Method.GET, aptusUrl,
+                                    Response.Listener { _ ->
+                                        //Should probably check if I get OK
 
-                            // Automatically unlock a specific door
-
-                            val openAptus = StringRequest(Request.Method.GET, aptusUrl,
-                                Response.Listener { response3 ->
-                                    //Should check if I get OK
-
-                                    val doorID = "116234"
-                                    val aptUrl =
-                                        "https://apt-www.chalmersstudentbostader.se/AptusPortal/Lock/UnlockEntryDoor/$doorID"
-                                    val openDoorRequest = StringRequest(Request.Method.GET, aptUrl,
-                                        Response.Listener { response4 ->
-                                            // Maybe should check the response
-                                            textView.text = response4.dropWhile { c -> c != ':' }.
-                                                                      drop(2).
-                                                                      takeWhile { c -> c != '"' }
-                                        },
-                                        Response.ErrorListener { textView.text = "Opening Door didn't work" })
-                                    queue.add(openDoorRequest)
-                                },
-                                Response.ErrorListener { textView.text = "Opening Aptus didn't work" }
-                            )
-                            queue.add(openAptus)
-
+                                        val doorID = "116234"
+                                        val aptUrl =
+                                            "https://apt-www.chalmersstudentbostader.se/AptusPortal/Lock/UnlockEntryDoor/$doorID"
+                                        // Automatically unlock a specific door
+                                        val openDoorRequest = StringRequest(Request.Method.GET, aptUrl,
+                                            Response.Listener { _ ->
+                                                // Maybe should check the response
+                                                textView.text = "Door Unlocked"
+                                                // Below stopped working for unknown reason
+                                                /* textView.text = response4.dropWhile { c -> c != ':' }.
+                                                                          drop(2).
+                                                                          takeWhile { c -> c != '"' }
+                                                */
+                                            },
+                                            Response.ErrorListener {
+                                                textView.text = "Opening Door didn't work, redirecting to Aptus"
+                                                manualUnlock(aptusUrl)
+                                            })
+                                        queue.add(openDoorRequest)
+                                    },
+                                    Response.ErrorListener { textView.text = "Opening Aptus didn't work" }
+                                )
+                                queue.add(openAptus)
+                            } else {
+                                // Manually unlock
+                                manualUnlock(aptusUrl)
+                            }
                         },
                         Response.ErrorListener { textView.text = "JQuery didn't work!"
                         }
@@ -214,4 +225,32 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         */
     }
+
+    private fun manualUnlock (url : String) {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    }
+    private val shortcutManager: ShortcutManager = getSystemService<ShortcutManager>(ShortcutManager::class.java)
+
+
+    fun createShortcut (doorID : String) {
+        val shortcut = ShortcutInfo.Builder(applicationContext, doorID)
+            .setShortLabel("AutoOpenCSB")
+            .setLongLabel("Automatically OpenCSB")
+            .build()
+
+        shortcutManager!!.dynamicShortcuts = Arrays.asList(shortcut)
+    }
+
+
+    fun automaticInfo (view: View) {
+        // popupWindow(res.layout.info_automatic_open)
+    }
+
+    fun openSettings (view: View) {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
+    }
+
+
 }
+
