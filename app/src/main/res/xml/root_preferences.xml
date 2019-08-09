@@ -16,9 +16,11 @@
 
 <androidx.preference.PreferenceScreen
         xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:textAppearance="
 
     <PreferenceCategory
             app:title="@string/messages_header">
+
 
         <EditTextPreference
                 app:key="signature"
@@ -28,19 +30,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-            app:title="@string/sync_header">
-
-        <SwitchPreferenceCompat
-                app:key="sync"
-                app:title="@string/sync_title"/>
-
-        <SwitchPreferenceCompat
-                app:key="attachment"
-                app:title="@string/attachment_title"
-                app:summaryOn="@string/attachment_summary_on"
-                app:summaryOff="@string/attachment_summary_off"
-                app:dependency="sync"/>
-
-    </PreferenceCategory>
+            app:title="@string/sync_header"/>
 
 </androidx.preference.PreferenceScreen>

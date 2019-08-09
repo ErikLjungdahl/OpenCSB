@@ -229,16 +229,17 @@ class MainActivity : AppCompatActivity() {
     private fun manualUnlock (url : String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
-    private val shortcutManager: ShortcutManager = getSystemService<ShortcutManager>(ShortcutManager::class.java)
 
 
     fun createShortcut (doorID : String) {
+        val shortcutManager: ShortcutManager = getSystemService<ShortcutManager>(ShortcutManager::class.java)
+
         val shortcut = ShortcutInfo.Builder(applicationContext, doorID)
             .setShortLabel("AutoOpenCSB")
             .setLongLabel("Automatically OpenCSB")
             .build()
 
-        shortcutManager!!.dynamicShortcuts = Arrays.asList(shortcut)
+        shortcutManager.dynamicShortcuts = listOf(shortcut)
     }
 
 
