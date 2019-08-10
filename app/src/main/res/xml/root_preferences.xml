@@ -14,22 +14,33 @@
   ~ limitations under the License.
   -->
 
-<androidx.preference.PreferenceScreen
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-        android:textAppearance="
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-            app:title="@string/messages_header">
-
+            android:title="Automatic door opening (1-click)">
 
         <EditTextPreference
-                app:key="signature"
-                app:title="@string/signature_title"
-                app:useSimpleSummaryProvider="true"/>
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="Specify DoorID to create shortcut" android:key="doorID"
+                android:dialogMessage="Blåelden:\nMain Entrance: 116234" android:dialogTitle="Common DoorIDs"
+                android:id="@+id/doorID"/>
+        <Preference
+                app:key="feedback"
+                app:title="Create pinned Shortcut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:summary="Another option is to long-press the app to access the shortcut"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="Others">
 
+        <Preference
+                app:key="feedback"
+                app:title="Send feedback"
+                app:summary="Report technical issues or suggest new features" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/preference"/>
     </PreferenceCategory>
 
-    <PreferenceCategory
-            app:title="@string/sync_header"/>
-
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>
