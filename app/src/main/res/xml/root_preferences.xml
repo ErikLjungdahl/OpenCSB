@@ -25,13 +25,8 @@
                 android:singleLine="true"
                 android:title="Specify DoorID to create shortcut" android:key="doorID"
                 android:dialogMessage="Blåelden:\nMain Entrance: 116234" android:dialogTitle="Common DoorIDs"
-                android:id="@+id/doorID"/>
-        <Preference
-                app:key="feedback"
-                app:title="Create pinned Shortcut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:summary="Another option is to long-press the app to access the shortcut"/>
+                android:id="@+id/doorID"
+                android:summary="Long-press the app to access shortcut (can be dragged out as well)"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="Others">
@@ -40,7 +35,18 @@
                 app:key="feedback"
                 app:title="Send feedback"
                 app:summary="Report technical issues or suggest new features" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/preference"/>
+                android:layout_height="wrap_content" android:id="@+id/preference">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/ErikLjungdahl/OpenCSB/issues" />
+        </Preference>
+        <Preference
+                app:title="Upcoming Feature: Create pinned Shortcut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:summary="Another option is to long-press the app to access the shortcut"/>
+
+
     </PreferenceCategory>
 
 </PreferenceScreen>

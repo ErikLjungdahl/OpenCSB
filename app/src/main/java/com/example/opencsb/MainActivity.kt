@@ -3,13 +3,8 @@ package com.example.opencsb
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentSender
-import android.content.pm.ShortcutInfo
-import android.content.pm.ShortcutManager
-import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
@@ -27,8 +22,6 @@ import java.net.CookieManager
 import com.google.android.gms.auth.api.credentials.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.common.api.ResolvableApiException
-import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -192,7 +185,7 @@ class MainActivity : AppCompatActivity() {
                                                 textView.text = "Opening Door didn't work, redirecting to Aptus"
                                                 manualUnlock(aptusUrl)
                                             })
-                                        // queue.add(openDoorRequest)
+                                        queue.add(openDoorRequest)
                                     },
                                     Response.ErrorListener { textView.text = "Opening Aptus didn't work" }
                                 )
@@ -217,56 +210,17 @@ class MainActivity : AppCompatActivity() {
             )
         // Add the request to the RequestQueue.
         queue.add(stringRequest)
-
-        /*
-        val intent = Intent(this, Ports::class.java).apply {
-            putExtra(EXTRA_MESSAGE, message)
-        }
-        startActivity(intent)
-        */
     }
 
     private fun manualUnlock (url : String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
-
-
-
     fun openSettings (view: View) {
-        val intent = Intent(this, SettingsActivity::class.java)
+        val intent = Intent(applicationContext, SettingsActivity::class.java)
         startActivity(intent)
-        val doorID = findViewById<EditText>(R.id.doorID)
-        doorID.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                createShortcut(p0.toString())
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-        })
-
-
-    }
-    fun sendFeedback (view: View) {
-        manualUnlock("https://github.com/ErikLjungdahl/OpenCSB/issues")
     }
 
-
-
-    fun createShortcut (doorID : String) {
-        val shortcutManager: ShortcutManager = getSystemService<ShortcutManager>(ShortcutManager::class.java)
-        val shortcut = ShortcutInfo.Builder(applicationContext, "doorID")
-            .setShortLabel("AutoOpenCSB")
-            .setLongLabel("Automatically OpenCSB")
-            .setIntent(Intent(Intent.ACTION_MAIN).putExtra("doorID", doorID))
-            .build()
-
-        shortcutManager.dynamicShortcuts = listOf(shortcut)
-    }
 
 
 }

@@ -3,12 +3,14 @@ package com.example.opencsb
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -17,6 +19,5 @@ class SettingsActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(android.R.id.content, SettingsFragment())
             .commit()
-
     }
 }
