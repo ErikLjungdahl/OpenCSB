@@ -75,7 +75,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/floatingActionButton" android:visibility="visible"
-            android:tint="#000000" android:onClick="openSettings" app:maxImageSize="48dp"
+            android:tint="#000000" android:onClick="openSettings" app:maxImageSize="32dp"
             app:fabSize="normal" app:fabCustomSize="64dp"
             app:useCompatPadding="false"
             android:focusable="auto"
