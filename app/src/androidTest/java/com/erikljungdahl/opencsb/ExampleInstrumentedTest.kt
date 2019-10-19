@@ -1,4 +1,4 @@
-package com.example.opencsb
+package erikljungdahl.opencsb
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4

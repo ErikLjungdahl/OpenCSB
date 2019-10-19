@@ -1,12 +1,10 @@
-package com.example.opencsb
+package erikljungdahl.opencsb
 
 
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
-import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import androidx.preference.EditTextPreference
 import androidx.preference.EditTextPreference.SimpleSummaryProvider.getInstance
 import androidx.preference.Preference

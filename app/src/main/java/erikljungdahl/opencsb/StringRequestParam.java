@@ -1,16 +1,11 @@
-package com.example.opencsb;
+package erikljungdahl.opencsb;
 
 import androidx.annotation.Nullable;
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Response;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class StringRequestParam extends StringRequest {

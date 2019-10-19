@@ -35,16 +35,7 @@
                 app:key="feedback"
                 app:title="Send feedback"
                 app:summary="Report technical issues or suggest new features" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/preference">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/ErikLjungdahl/OpenCSB/issues" />
-        </Preference>
-        <Preference
-                app:title="Upcoming Feature: Create pinned Shortcut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:summary="Another option is to long-press the app to access the shortcut"/>
+                android:layout_height="wrap_content" android:id="@+id/preference"/>
 
 
     </PreferenceCategory>

@@ -1,4 +1,4 @@
-package com.example.opencsb
+package erikljungdahl.opencsb
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import br.com.simplepass.loadingbutton.customViews.CircularProgressButton
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -23,10 +24,12 @@ import com.google.android.gms.auth.api.credentials.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.common.api.ResolvableApiException
 
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var mCredentialsClient: CredentialsClient
     lateinit var mCredentialRequest: CredentialRequest
+    lateinit var btn : CircularProgressButton
 
     private val TAG = "MainActivity"
     private val RC_SAVE = 1
@@ -45,11 +48,10 @@ class MainActivity : AppCompatActivity() {
             val accountType = credential.accountType
             if (accountType == null) {
                 // Sign the user in with information from the Credential.
-                val pwd = credential.password
-                if (pwd != null) {
+                if (credential.password != null) {
                     findViewById<EditText>(R.id.input_personnummer).setText(credential.id)
-                    findViewById<EditText>(R.id.input_pwd).setText("RandomStringForObscurity")
-                    loginCsb(credential.id, pwd)
+                    findViewById<EditText>(R.id.input_pwd).setText(credential.password)
+                    loginCsb(credential.id, credential.password!!)
                 }
             }
         }
@@ -120,6 +122,9 @@ class MainActivity : AppCompatActivity() {
         val textView = findViewById<TextView>(R.id.output_result)
         // textView.movementMethod = ScrollingMovementMethod()
 
+        btn = findViewById(R.id.button_login)
+        btn.startAnimation();
+
         // Instantiate the RequestQueue.
         val queue = Volley.newRequestQueue(this)
         val url = "https://www.chalmersstudentbostader.se/wp-login.php"
@@ -142,17 +147,8 @@ class MainActivity : AppCompatActivity() {
 
                     val completeUrl = "https://www.chalmersstudentbostader.se/widgets/?callback=jQuery" +
                                               id + "_" + unixTime + "&widgets%5B%5D=aptuslogin%40APTUSPORT"
-/*                  // Doesn't seem to work, not exactly a json that gets returned
-                    val jquery = JsonObjectRequest(Request.Method.GET, completeUrl, null,
-                    Response.Listener<JSONObject> { response2 ->
 
-                            textView.text = "Response: %s".format(response2.toString())
-                        },
-                        Response.ErrorListener { textView.text = "JQuery didn't work!"
-                        }
-                    )
-                    queue.add(jquery)
-*/
+                    // Requesting the widget that supplies the aptuslogin url
                     val jquery = StringRequest(Request.Method.GET, completeUrl,
                         Response.Listener<String> { response2 ->
                             val json = (response2.dropWhile { c -> c != '(' }
@@ -175,6 +171,7 @@ class MainActivity : AppCompatActivity() {
                                             Response.Listener { _ ->
                                                 // Maybe should check the response
                                                 textView.text = "Door Unlocked"
+                                                btn.revertAnimation()
                                                 // Below stopped working for unknown reason
                                                 /* textView.text = response4.dropWhile { c -> c != ':' }.
                                                                           drop(2).
@@ -182,12 +179,15 @@ class MainActivity : AppCompatActivity() {
                                                 */
                                             },
                                             Response.ErrorListener {
-                                                textView.text = "Opening Door didn't work, redirecting to Aptus"
+                                                textView.text = "Opening Door automatically didn't work, redirecting to manual unlock"
                                                 manualUnlock(aptusUrl)
                                             })
                                         queue.add(openDoorRequest)
                                     },
-                                    Response.ErrorListener { textView.text = "Opening Aptus didn't work" }
+                                    Response.ErrorListener {
+                                        textView.text = "Opening Aptus didn't work"
+                                        btn.revertAnimation()
+                                    }
                                 )
                                 queue.add(openAptus)
                             } else {
@@ -195,7 +195,9 @@ class MainActivity : AppCompatActivity() {
                                 manualUnlock(aptusUrl)
                             }
                         },
-                        Response.ErrorListener { textView.text = "JQuery didn't work!"
+                        Response.ErrorListener {
+                            textView.text = "Login succeeded but URL to aptus could not be fetched"
+                            btn.revertAnimation()
                         }
                     )
                     queue.add(jquery)
@@ -204,7 +206,9 @@ class MainActivity : AppCompatActivity() {
                     textView.text = "Login failed"
                 }
             },
-            Response.ErrorListener { textView.text = "That didn't work!"
+            Response.ErrorListener {
+                textView.text = "Could not access CSB's Website"
+                btn.revertAnimation()
             },
             params
             )
@@ -213,6 +217,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun manualUnlock (url : String) {
+        btn.revertAnimation()
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 

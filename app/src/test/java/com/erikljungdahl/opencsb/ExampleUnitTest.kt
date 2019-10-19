@@ -1,4 +1,4 @@
-package com.example.opencsb
+package erikljungdahl.opencsb
 
 import org.junit.Test
 
