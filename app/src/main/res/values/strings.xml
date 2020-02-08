@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Open CSB</string>
+    <string name="app_name">OpenCSB</string>
     <string name="personummer"></string>
     <string name="password"></string>
     <string name="login_button">Login</string>
