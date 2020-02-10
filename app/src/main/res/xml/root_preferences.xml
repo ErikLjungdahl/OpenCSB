@@ -21,21 +21,25 @@
             android:title="Automatic door opening (1-click)">
 
         <EditTextPreference
+                android:id="@+id/doorID"
+                android:dialogMessage="Blåelden:\nMain Entrance: 116234 \n\n\n(Is your door not in the list? You can find the DoorID by inspecting the element in a browser)"
+                android:dialogTitle="Common DoorIDs"
+                android:key="doorID"
                 android:selectAllOnFocus="true"
                 android:singleLine="true"
-                android:title="Specify DoorID to create shortcut" android:key="doorID"
-                android:dialogMessage="Blåelden:\nMain Entrance: 116234" android:dialogTitle="Common DoorIDs"
-                android:id="@+id/doorID"
-                android:summary="Long-press the app to access shortcut (can be dragged out as well)"/>
+                android:summary="Long-press the app to access shortcut (can be dragged out as well)"
+                android:title="Specify DoorID to create shortcut" />
     </PreferenceCategory>
     <PreferenceCategory
             android:title="Others">
 
         <Preference
+                android:id="@+id/feedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:key="feedback"
-                app:title="Send feedback"
-                app:summary="Report technical issues or suggest new features" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/preference"/>
+                app:summary="Report technical issues or suggest new features"
+                app:title="Send feedback" />
 
 
     </PreferenceCategory>
