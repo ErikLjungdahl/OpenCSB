@@ -39,7 +39,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         CookieHandler.setDefault(CookieManager())
 
-        mCredentialsClient = Credentials.getClient(this)
+        val options = CredentialsOptions.Builder()
+            .forceEnableSaveDialog()
+            .build()
+        mCredentialsClient = Credentials.getClient(this, options)
         mCredentialRequest = CredentialRequest.Builder()
             .setPasswordLoginSupported(true)
             .build()
@@ -101,11 +104,11 @@ class MainActivity : AppCompatActivity() {
                         } catch (sie: IntentSender.SendIntentException) {
                             // Could not resolve the request
                             Log.e(TAG, "Failed to send resolution.", sie)
-                            Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Save failed: Couldn't resolve", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         // Request has no resolution
-                        Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Save failed: No resolution", Toast.LENGTH_SHORT).show()
                     }
                 }
             )
@@ -180,6 +183,7 @@ class MainActivity : AppCompatActivity() {
                                             },
                                             Response.ErrorListener {
                                                 textView.text = "Opening Door automatically didn't work, redirecting to manual unlock"
+                                                btn.revertAnimation()
                                                 manualUnlock(aptusUrl)
                                             })
                                         queue.add(openDoorRequest)
@@ -193,6 +197,7 @@ class MainActivity : AppCompatActivity() {
                             } else {
                                 // Manually unlock
                                 manualUnlock(aptusUrl)
+                                btn.revertAnimation()
                             }
                         },
                         Response.ErrorListener {
@@ -204,6 +209,7 @@ class MainActivity : AppCompatActivity() {
 
                 } else {
                     textView.text = "Login failed"
+                    btn.revertAnimation()
                 }
             },
             Response.ErrorListener {
@@ -217,7 +223,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun manualUnlock (url : String) {
-        btn.revertAnimation()
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 

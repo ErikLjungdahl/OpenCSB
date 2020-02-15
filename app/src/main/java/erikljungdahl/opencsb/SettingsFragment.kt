@@ -7,7 +7,6 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import androidx.preference.EditTextPreference
 import androidx.preference.EditTextPreference.SimpleSummaryProvider.getInstance
 import androidx.preference.Preference
@@ -25,25 +24,33 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        val remove : Preference? = findPreference("removeShortcuts")
+        remove?.setOnPreferenceClickListener {
+            val shortcutManager: ShortcutManager = activity!!.getSystemService(ShortcutManager::class.java)!!
+            shortcutManager.removeAllDynamicShortcuts()
+            true
+        }
+
+
         val feedback : Preference? = findPreference("feedback")
         feedback?.setOnPreferenceClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/ErikLjungdahl/OpenCSB/issues")))
             true
         }
+
     }
 
     fun createShortcut (doorID : String) {
         val shortcutManager: ShortcutManager = activity!!.getSystemService(ShortcutManager::class.java)!!
-        val shortcut = ShortcutInfo.Builder(activity, "doorID")
-            .setShortLabel("AutoOpenCSB")
-            .setLongLabel("Automatically OpenCSB")
+        val shortcut = ShortcutInfo.Builder(activity, doorID)
+            .setShortLabel("Open $doorID")
+            .setLongLabel("Open $doorID with 1 click")
             .setIcon(Icon.createWithResource(context, R.mipmap.ic_shortcut_autoopencsb))
             .setIntent(
                 Intent(activity!!.applicationContext, MainActivity::class.java)
                     .setAction(Intent.ACTION_MAIN)
                     .putExtra("doorID", doorID))
             .build()
-
-        shortcutManager.dynamicShortcuts = listOf(shortcut)
+        shortcutManager.addDynamicShortcuts(listOf(shortcut))
     }
 }

@@ -29,6 +29,13 @@
                 android:singleLine="true"
                 android:summary="Long-press the app to access shortcut (can be dragged out as well)"
                 android:title="Specify DoorID to create shortcut" />
+        <Preference
+                android:id="@+id/removeShortcuts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:key="removeShortcuts"
+                app:title="Remove all shortcuts" />
+
     </PreferenceCategory>
     <PreferenceCategory
             android:title="Others">
